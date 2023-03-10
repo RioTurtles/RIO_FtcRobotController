@@ -26,4 +26,7 @@ android {
 dependencies {
     implementation project(':FtcRobotController')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
+    implementation('org.tensorflow:tensorflow-lite:2.0.0')
+    implementation('org.tensorflow:tensorflow-lite-gpu:2.0.0')
+    implementation('org.tensorflow:tensorflow-lite-support:0.0.0-nightly') { changing = true }
 }
