@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -23,12 +26,26 @@ public class Project1Hardware {
     DcMotorEx arm = null;
     DcMotor horz = null, vert = null;
     DcMotor flip1, flip2;
+    DcMotor rVert,lVert;
+    DcMotor rHorz, lHorz;
+
     Servo claw1, claw2, yaw1, yaw2;
-    Servo bucket = null, bucketAngle = null;
+    Servo bucketAngle = null;
     Servo claw = null, clawAngle = null;
+    Servo armLeft = null, armRight =null;
+    Servo yGuide = null;
     NormalizedColorSensor colorSensor = null;
     HardwareMap hwmap = null;
     IMU imu1;
+    DcMotor encoder;
+    DistanceSensor leftDis,rightDis,backDis,fRightDis;
+
+
+    NormalizedColorSensor bucketColor = null;
+    //NormalizedColorSensor clawColor = null;
+
+
+
 
     public void init(HardwareMap hardwareMap){
         hwmap = hardwareMap;
@@ -36,40 +53,74 @@ public class Project1Hardware {
         frontRight = hardwareMap.get(DcMotor.class,"FRight");
         backLeft = hardwareMap.get(DcMotor.class,"BLeft");
         backRight = hardwareMap.get(DcMotor.class,"BRight");
+
+
+        rVert = hardwareMap.get(DcMotor.class,"rightVert");
+        lVert = hardwareMap.get(DcMotor.class,"leftVert");
+
+        rHorz = hardwareMap.get(DcMotor.class,"rightHorz");
+        lHorz = hardwareMap.get(DcMotor.class,"leftHorz");
+
         //arm = hardwareMap.get(DcMotorEx.class,"ARM");
         //bucket = hardwareMap.get(Servo.class, "BUCKET");            // bucket open/close
-        //bucketAngle = hardwareMap.get(Servo.class, "BUCKET ANGLE"); // whole bucket
-        //claw = hardwareMap.get(Servo.class, "CLAW");                // intake open/close
-        //clawAngle = hardwareMap.get(Servo.class, "CLAW ANGLE");     // whole intake
+        bucketAngle = hardwareMap.get(Servo.class, "bucketAngle"); // whole bucket
+        claw = hardwareMap.get(Servo.class, "claw");                // intake open/close
+        clawAngle = hardwareMap.get(Servo.class, "clawAngle");     // whole intake
         //colorSensor = hardwareMap.get(NormalizedColorSensor.class, "BUCKET COLOR");
         //horz = hardwareMap.get(DcMotor.class, "HORZ SLIDE");
-        vert = hardwareMap.get(DcMotor.class, "VERT SLIDE");
+        //vert = hardwareMap.get(DcMotor.class, "VERT SLIDE");
         imu1 = hardwareMap.get(IMU.class, "imu");
 
 
         //flip1 = hardwareMap.get(DcMotor.class, "FLIP1");
         //flip2 = hardwareMap.get(DcMotor.class, "FLIP2");
-        claw1 = hardwareMap.get(Servo.class, "CLAW1");
-        claw2 = hardwareMap.get(Servo.class, "CLAW2");
-        yaw1 = hardwareMap.get(Servo.class, "YAW1");
-        yaw2 = hardwareMap.get(Servo.class, "YAW2");
+        //claw1 = hardwareMap.get(Servo.class, "CLAW1");
+        //claw2 = hardwareMap.get(Servo.class, "CLAW2");
+        //yaw1 = hardwareMap.get(Servo.class, "YAW1");
+        //yaw2 = hardwareMap.get(Servo.class, "YAW2");
+        armLeft = hardwareMap.get(Servo.class, "armLeft");
+        armRight = hardwareMap.get(Servo.class, "armRight");
+
+        yGuide = hardwareMap.get(Servo.class, "yGuide");
 
 
-        frontLeft.setDirection(DcMotor.Direction.FORWARD);
-        frontRight.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.FORWARD);
+        leftDis= hardwareMap.get(DistanceSensor.class, "leftDistance");
+        rightDis= hardwareMap.get(DistanceSensor.class, "rightDistance");
+        backDis= hardwareMap.get(DistanceSensor.class, "backDistance");
+        fRightDis= hardwareMap.get(DistanceSensor.class, "frontRightDistance");
+
+
+        //encoder = hardwareMap.get(DcMotor.class, "encoder");
+        bucketColor = hardwareMap.get(NormalizedColorSensor.class, "bucketColor");
+
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.FORWARD);
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.REVERSE);
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        vert.setDirection(DcMotor.Direction.REVERSE);
+        rVert.setDirection(DcMotor.Direction.FORWARD);
+        lVert.setDirection(DcMotor.Direction.REVERSE);
+        rVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lVert.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rHorz.setDirection(DcMotor.Direction.FORWARD);
+        lHorz.setDirection(DcMotor.Direction.REVERSE);
+        rHorz.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lHorz.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
+
+        //vert.setDirection(DcMotor.Direction.REVERSE);
+        armLeft.setDirection(Servo.Direction.REVERSE);
+        armRight.setDirection(Servo.Direction.FORWARD);
 
         imu1.initialize(
                 new IMU.Parameters(
                         new RevHubOrientationOnRobot(
-                                RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
-                                RevHubOrientationOnRobot.UsbFacingDirection.UP
+                                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
                         )
                 )
         );
@@ -182,6 +233,91 @@ public class Project1Hardware {
         setMode(2);
     }
 
+    public void setVert(int height){
+        lVert.setTargetPosition(height);
+        rVert.setTargetPosition(height);
+        lVert.setPower(1);
+        rVert.setPower(1);
+        lVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+    }
+    public void clawClose(){
+        claw.setPosition(0.3);
+    }
+    public void clawOpen() {
+        claw.setPosition(0.05);
+
+
+    }
+    public void setArm(double armAngle){
+
+        armLeft.setPosition(armAngle);
+        armRight.setPosition(armAngle);
+
+    }
+
+
+
+
+    public void setHorz(int horzTarget){
+        lHorz.setTargetPosition(horzTarget);
+        rHorz.setTargetPosition(horzTarget);
+        lHorz.setPower(1);
+        rHorz.setPower(1);
+        lHorz.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rHorz.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+    }
+
+
+
+
+    /*public static double[] servoPos ={0,0,0,0,0,0,0,0};
+    public static double[] servoTarget ={0,0,0,0,0,0,0,0};
+
+
+    public void setServo (int port, double target, int speed){
+        servoTarget[port] = target;
+
+        if (servoPos[port]<servoTarget[port]) {
+            servoPos[port] += speed;
+        }else if (servoPos[port]>servoTarget[port]){
+            servoPos[port] -= speed;
+        }else {
+            servoPos[port]= servoPos[port];
+
+        }
+    }
+
+    public double returnServoPos(int port){
+        return servoPos[port];
+    }*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
     public void IntakeClose(){
         claw1.setPosition(0.95);
         claw2.setPosition(0.75);
@@ -207,5 +343,5 @@ public class Project1Hardware {
         claw1.setPosition(0.95);
         claw2.setPosition(0.75);
 
-    }
+    }*/
 }
