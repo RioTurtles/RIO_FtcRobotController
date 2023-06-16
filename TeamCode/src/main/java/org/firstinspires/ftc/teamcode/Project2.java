@@ -46,18 +46,21 @@ public class Project2 extends LinearOpMode
         double toggleTimer = 0, toggleOrig1 = 0, toggleInterval = 50;
         double toggleTimer2 =0;
         double toggleTimer3 =0;
+        double xPos = -robot.frontRight.getCurrentPosition();
+        double yPos = -robot.frontLeft.getCurrentPosition();
+
 
         int vertPos;
         int vertTarget =0 ;
 
         int horzTarget =0;
-        int farmingHorz = 1800;
+        int farmingHorz = 1300;
 
 
         String mode = "OFF";
         robot.setArm(0.9);
-        robot.clawAngle.setPosition(0.3);
-        robot.yGuide.setPosition(0.15);
+        robot.clawAngle.setPosition(0.28);
+        robot.yGuide.setPosition(0.2);
         waitForStart();
         drivetrain.remote(0,0,0,0);
 
@@ -77,12 +80,20 @@ public class Project2 extends LinearOpMode
         boolean farmingReady =true;
 
 
-        boolean bucketcheck = ((robot.bucketColor.getNormalizedColors().red> 0.05) || (robot.bucketColor.getNormalizedColors().blue>0.05));
+
+        boolean bucketcheck = ((robot.bucketColor.getNormalizedColors().red> 0.009) || (robot.bucketColor.getNormalizedColors().blue>0.009));
+        boolean clawcheck = ((robot.clawColor.red()> 100) || (robot.clawColor.blue()>100));
 
         robot.lHorz.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rHorz.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.lVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //robot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //robot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
 
@@ -92,7 +103,11 @@ public class Project2 extends LinearOpMode
             direction_x = -gamepad1.left_stick_x;
             pivot    =  gamepad1.right_stick_x;
             heading = robot.imu1.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-            bucketcheck = ((robot.bucketColor.getNormalizedColors().red> 0.05) || (robot.bucketColor.getNormalizedColors().blue>0.05));
+            bucketcheck = ((robot.bucketColor.getNormalizedColors().red> 0.01) || (robot.bucketColor.getNormalizedColors().blue>0.01));
+            clawcheck = (((robot.clawColor.red()> 100) || (robot.clawColor.blue()>100))&&((robot.clawColor.green()<robot.clawColor.blue())||(robot.clawColor.green()<robot.clawColor.red())));
+            xPos = -robot.frontRight.getCurrentPosition();
+            yPos = -robot.frontLeft.getCurrentPosition();
+
 
             toggleTimer +=1 ;
             toggleTimer2 +=1 ;
@@ -212,14 +227,14 @@ public class Project2 extends LinearOpMode
 
 
             if (stage == 0){
-                robot.bucketAngle.setPosition(0.68);
-                robot.clawAngle.setPosition(0.3);
+                robot.bucketAngle.setPosition(0.65);
+                robot.clawAngle.setPosition(0.28);
                 //robot.setArm(0.05);
-                robot.yGuide.setPosition(0.15);
+                robot.yGuide.setPosition(0.2);
 
 
                 if(!farming){
-                    if (gamepad1.right_bumper){
+                    if (gamepad1.right_bumper||clawcheck){
 
 
                         drivetrain.remote(0,0,0,0);
@@ -237,12 +252,12 @@ public class Project2 extends LinearOpMode
                     robot.setArm(0.05);
                     robot.setHorz(farmingHorz);
 
-                    if (robot.lHorz.getCurrentPosition()>farmingHorz-200){
+                    if (robot.lHorz.getCurrentPosition()>farmingHorz-200||clawcheck){
                         drivetrain.remote(0, 0, pivot, 0);
                         robot.clawClose();
-                        sleep(500);
+                        sleep(200);
                         robot.setArm(0.4);
-                        sleep(500);//half lifted
+                        //sleep(500);//half lifted
                         robot.setHorz(0);
                         stage+=1;
                     }
@@ -251,20 +266,20 @@ public class Project2 extends LinearOpMode
             if (stage==1){
                 if(!ground){
                     if (robot.lHorz.getCurrentPosition()<20){
-                        robot.setArm(0.8);
+                        robot.setArm(0.83);
 
                         toggleTimer=0;
                         stage += 1;
 
                     }else{
-                        robot.setArm(0.4);
+                        robot.setArm(0.7);
                     }
 
                 }else {
                     robot.setArm(0.8);
 
                     if(gamepad1.right_bumper){
-                        robot.clawAngle.setPosition(0.3);//horizontal
+                        robot.clawAngle.setPosition(0.28);//horizontal
                         robot.setArm(0.05);//ground level
                         drivetrain.remote(0,0,0,0);
                         sleep(500);
@@ -280,11 +295,12 @@ public class Project2 extends LinearOpMode
 
             if (stage ==2){
 
-                if (toggleTimer > 20){
-                    robot.clawAngle.setPosition(0.9);
+                if (toggleTimer > 6){
+                    robot.clawAngle.setPosition(0.85);
                 }
+                bucketcheck = ((robot.bucketColor.getNormalizedColors().red> 0.009) || (robot.bucketColor.getNormalizedColors().blue>0.009));
 
-                if (toggleTimer > 30){
+                if (toggleTimer > 15||bucketcheck){
                     robot.clawOpen();
                     stage +=1 ;
                     toggleTimer = 0;
@@ -294,8 +310,8 @@ public class Project2 extends LinearOpMode
             if (stage ==3){
 
 
-                if (toggleTimer > 20||bucketcheck) {
-                    robot.clawAngle.setPosition(0.3);
+                if (toggleTimer > 5) {
+                    robot.clawAngle.setPosition(0.28);
 
                     if (bucketcheck){
                         toggleTimer=0;
@@ -339,7 +355,7 @@ public class Project2 extends LinearOpMode
                                 robot.bucketAngle.setPosition(0);
 
                                 sleep(600);
-                                robot.bucketAngle.setPosition(0.7);
+                                robot.bucketAngle.setPosition(0.65);
                                 sleep(300);
                                 robot.setVert(0);
                                 stage = 0;
@@ -358,7 +374,7 @@ public class Project2 extends LinearOpMode
                 drivetrain.remote(0,0,0,0);
                 robot.bucketAngle.setPosition(0);
                 sleep(600);
-                robot.bucketAngle.setPosition(0.7);
+                robot.bucketAngle.setPosition(0.65);
                 sleep(200);
                 robot.setVert(0);
                 lowcontrol = false;
@@ -369,6 +385,7 @@ public class Project2 extends LinearOpMode
             //Farming
             if (gamepad1.dpad_up && toggleTimer3 >20){
                 farming = !farming;
+                vertTarget = 2300;
                 toggleTimer3 =0;
             }
             if(gamepad1.dpad_down){
@@ -387,8 +404,8 @@ public class Project2 extends LinearOpMode
                     } else{
                         robot.setArm(0.05);//intake position
                     }
-                    robot.clawAngle.setPosition(0.3);//horizontal position
-                    if((toggleTimer2>10)&&(robot.lHorz.getCurrentPosition()<3000)){
+                    robot.clawAngle.setPosition(0.28);//horizontal position
+                    if((toggleTimer2>10)&&(robot.lHorz.getCurrentPosition()<2000)){
                         horzTarget =robot.lHorz.getCurrentPosition()+400;//speed of horizontal
                         robot.setHorz(horzTarget);
                     }
@@ -404,18 +421,15 @@ public class Project2 extends LinearOpMode
                     }
                 }
             }
-            /*
-            if (gamepad1.dpad_up){
-                robot.clawOpen();
-                robot.setHorz(500);
-                sleep(10000);
-                robot.clawClose();
-                robot.setArm(0.4);
-                robot.setHorz(0);
-                sleep(10000);
+            if(gamepad1.right_trigger>0.2){
+                robot.setArm(0.15);
+            }
+            if(gamepad1.left_trigger>0.2){//hardRest
+                stage =0;
+                loaded=false;
 
-            }*/
 
+            }
 
 
 
@@ -430,17 +444,29 @@ public class Project2 extends LinearOpMode
             //telemetry.addData("servopos2", servopos2);
             //telemetry.addData("servopos3", servopos3);
             // telemetry.addData("vert height", robot.lVert.getCurrentPosition());
-            //telemetry.addData("time", toggleTimer);
+            telemetry.addData("time", toggleTimer);
             telemetry.addData("stage",stage);
             telemetry.addData("Horz",robot.lHorz.getCurrentPosition());
             telemetry.addData("Horz Target",horzTarget);
             telemetry.addData("Horz",robot.lVert.getCurrentPosition());
 
-            telemetry.addData("red",robot.bucketColor.getNormalizedColors().red );
-            telemetry.addData("blue",robot.bucketColor.getNormalizedColors().blue );
+            telemetry.addData("bucket red",robot.bucketColor.getNormalizedColors().red );
+            telemetry.addData("bucket blue",robot.bucketColor.getNormalizedColors().blue );
+            telemetry.addData("claw red",robot.clawColor.red());
+            telemetry.addData("claw blue",robot.clawColor.blue());
+            telemetry.addData("claw green",robot.clawColor.green());
+            telemetry.addData("claw check",clawcheck);
+
+
             telemetry.addData("farming",farming);
+
+
             //telemetry.addData("yaw1", robot.yaw1.getPosition());
             //telemetry.addData("yaw2", robot.yaw2.getPosition());*/
+            telemetry.addData("heading",heading);
+            telemetry.addData("xPos",xPos);
+            telemetry.addData("yPos",yPos);
+
 
             telemetry.update();
 

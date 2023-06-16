@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+
 import javax.xml.datatype.DatatypeConfigurationException;
 
 public class Project1Hardware {
@@ -42,7 +43,7 @@ public class Project1Hardware {
 
 
     NormalizedColorSensor bucketColor = null;
-    //NormalizedColorSensor clawColor = null;
+    ColorSensor clawColor = null;
 
 
 
@@ -92,6 +93,16 @@ public class Project1Hardware {
 
         //encoder = hardwareMap.get(DcMotor.class, "encoder");
         bucketColor = hardwareMap.get(NormalizedColorSensor.class, "bucketColor");
+        clawColor = hardwareMap.get(ColorSensor.class, "clawColor");
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
 
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setDirection(DcMotor.Direction.FORWARD);
