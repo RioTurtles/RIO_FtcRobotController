@@ -24,13 +24,9 @@ import javax.xml.datatype.DatatypeConfigurationException;
 
 public class Project1Hardware {
     DcMotor frontLeft = null, frontRight = null, backLeft = null, backRight = null;
-    DcMotorEx arm = null;
-    DcMotor horz = null, vert = null;
-    DcMotor flip1, flip2;
-    DcMotor rVert,lVert;
+    DcMotor rVert, lVert;
     DcMotor rHorz, lHorz;
 
-    Servo claw1, claw2, yaw1, yaw2;
     Servo bucketAngle = null;
     Servo claw = null, clawAngle = null;
     Servo armLeft = null, armRight =null;
@@ -62,23 +58,11 @@ public class Project1Hardware {
         rHorz = hardwareMap.get(DcMotor.class,"rightHorz");
         lHorz = hardwareMap.get(DcMotor.class,"leftHorz");
 
-        //arm = hardwareMap.get(DcMotorEx.class,"ARM");
-        //bucket = hardwareMap.get(Servo.class, "BUCKET");            // bucket open/close
         bucketAngle = hardwareMap.get(Servo.class, "bucketAngle"); // whole bucket
         claw = hardwareMap.get(Servo.class, "claw");                // intake open/close
         clawAngle = hardwareMap.get(Servo.class, "clawAngle");     // whole intake
-        //colorSensor = hardwareMap.get(NormalizedColorSensor.class, "BUCKET COLOR");
-        //horz = hardwareMap.get(DcMotor.class, "HORZ SLIDE");
-        //vert = hardwareMap.get(DcMotor.class, "VERT SLIDE");
         imu1 = hardwareMap.get(IMU.class, "imu");
 
-
-        //flip1 = hardwareMap.get(DcMotor.class, "FLIP1");
-        //flip2 = hardwareMap.get(DcMotor.class, "FLIP2");
-        //claw1 = hardwareMap.get(Servo.class, "CLAW1");
-        //claw2 = hardwareMap.get(Servo.class, "CLAW2");
-        //yaw1 = hardwareMap.get(Servo.class, "YAW1");
-        //yaw2 = hardwareMap.get(Servo.class, "YAW2");
         armLeft = hardwareMap.get(Servo.class, "armLeft");
         armRight = hardwareMap.get(Servo.class, "armRight");
 
@@ -120,8 +104,6 @@ public class Project1Hardware {
         lHorz.setDirection(DcMotor.Direction.REVERSE);
         rHorz.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lHorz.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
 
         //vert.setDirection(DcMotor.Direction.REVERSE);
         armLeft.setDirection(Servo.Direction.REVERSE);

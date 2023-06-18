@@ -1,6 +1,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -27,12 +29,16 @@ public class Project2 extends LinearOpMode
     int stage = 0;
     int vertTarget = 0;
 
+    FtcDashboard dashboard;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
         Project1Hardware robot = new Project1Hardware();
         MecanumDrive drivetrain = new MecanumDrive(robot);
+
+        dashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry,dashboard.getTelemetry());
 
         robot.init(hardwareMap);
         telemetry.addData("Status", "Initialized");
@@ -109,9 +115,9 @@ public class Project2 extends LinearOpMode
             yPos = -robot.frontLeft.getCurrentPosition();
 
 
-            toggleTimer +=1 ;
+            toggleTimer +=1 ; //intake timer
             toggleTimer2 +=1 ;
-            toggleTimer3 +=1;
+            toggleTimer3 +=1; //farming timer
             //vertPos = robot.vert.getCurrentPosition();
             /*
             //if (gamepad1.square){
@@ -312,7 +318,7 @@ public class Project2 extends LinearOpMode
 
                 if (toggleTimer > 5) {
                     robot.clawAngle.setPosition(0.28);
-
+                    sleep(200);
                     if (bucketcheck){
                         toggleTimer=0;
                         loaded  = true;
@@ -467,6 +473,8 @@ public class Project2 extends LinearOpMode
             telemetry.addData("xPos",xPos);
             telemetry.addData("yPos",yPos);
 
+
+            //dashboard.startCameraStream(webcam1, 100);
 
             telemetry.update();
 
