@@ -45,7 +45,7 @@ public class Auton2 extends LinearOpMode {
 
         int vertPos;
         String mode = "OFF";
-
+        
         robot.setArm(0.83);
         robot.clawOpen();
         robot.clawAngle.setPosition(0.3);
@@ -72,13 +72,13 @@ public class Auton2 extends LinearOpMode {
         double scoringDirection = -0.3;
         double parkingDistance = 10;
         //double backOrgin = robot.backDis.getDistance(DistanceUnit.CM);
-        double intakeArm[] = {0.34,0.32,0.25,0.18,0.05,0};
+        double intakeArm[] = {0.35,0.32,0.25,0.18,0.05,0};
+        
 
 
 
 
-
-        boolean bucketCheck = ((robot.bucketColor.getNormalizedColors().red > 100) || (robot.bucketColor.getNormalizedColors().blue > 100));
+        boolean bucketCheck = ((robot.bucketColor.red() > 100) || (robot.bucketColor.blue() > 100));
         boolean loaded = false;
         boolean realse = false;
         boolean raise = false;
@@ -86,39 +86,39 @@ public class Auton2 extends LinearOpMode {
         boolean farming = false;
         boolean farmingReady = true;
         boolean scoring = false;
-        boolean bucketcheck = ((robot.bucketColor.getNormalizedColors().red> 0.05) || (robot.bucketColor.getNormalizedColors().blue>0.05));
+       // boolean bucketcheck = ((robot.bucketColor.getNormalizedColors().red> 0.05) || (robot.bucketColor.getNormalizedColors().blue>0.05));
 
-        int vertTarget = 2400;// high pole
+        int vertTarget = 1500;// high pole
         int horzTarget = 0;
         int stage = -1;
         int horzwait = 0;
-        int autonStage = 0;
+        int autonStage = 1;
         int scoredCones = 0;
-        int intakeHorz[] = {2000,1900,2100,2200,2400,0};
-
+        int intakeHorz[] = {2000,2000,2100,2300,2400,0};
+        
         timer.reset();
 
 
-
+        
 
         while (opModeIsActive()) {
             heading = robot.imu1.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
             pivot = targetDirection - heading;
             drivetrain.remote(direction_y, direction_x, pivot, heading);
-            bucketcheck = ((robot.bucketColor.getNormalizedColors().red> 0.05) || (robot.bucketColor.getNormalizedColors().blue>0.05));
+            //bucketcheck = ((robot.bucketColor.getNormalizedColors().red> 0.05) || (robot.bucketColor.getNormalizedColors().blue>0.05));
             toggleTimer +=1;
 
             if (autonStage ==0){ //moving right
-                direction_y = (83-robot.backDis.getDistance(DistanceUnit.CM))*0.1;//put distance code here
+                direction_y = (85-robot.backDis.getDistance(DistanceUnit.CM))*0.1*0;//put distance code here
                 direction_x = 0;
                 targetDirection = 0;
 
                 scoring = false;
 
-                if (robot.rightDis.getDistance(DistanceUnit.CM) >20){
-                    autonStage += 1;
+              if (robot.leftDis.getDistance(DistanceUnit.CM) >20){
+                   autonStage += 1;
 
-                }
+               }
             }
             if (autonStage ==1){ //moving right
                 direction_y = 0;//put distance code here
@@ -127,12 +127,12 @@ public class Auton2 extends LinearOpMode {
 
                 scoring = false;
 
-                if ((robot.leftDis.getDistance(DistanceUnit.CM) < 800) && ( robot.leftDis.getDistance(DistanceUnit.CM) >100)){
-                    autonStage += 1;
+              if ((robot.leftDis.getDistance(DistanceUnit.CM) < 800) && ( robot.leftDis.getDistance(DistanceUnit.CM) >100)){
+                   autonStage += 1;
 
-                }
+               }
             }
-            if (autonStage ==2){
+            if (autonStage ==2){ 
                 direction_y = 0;
                 direction_x = 0.5;
                 scoring = false;
@@ -143,8 +143,8 @@ public class Auton2 extends LinearOpMode {
                 }
             }
             if (autonStage ==3){ //turning
-                direction_y = 0;
-                direction_x = 0;
+                direction_y = 0.5;
+                direction_x = -0.2;
                 scoring = false;
                 targetDirection = scoringDirection;//
 
@@ -157,10 +157,12 @@ public class Auton2 extends LinearOpMode {
                 if (stage==0){
                     autonStage+=1;
                 }
+                robot.setHorz(1500);
+                robot.setArm(intakeArm[1]);
                 scoring = true;
                 direction_y = 0;
                 direction_x = 0;
-
+                
                 targetDirection = scoringDirection;
 
 
@@ -231,10 +233,10 @@ public class Auton2 extends LinearOpMode {
                 //robot.clawOpen();
                 horzTarget=intakeHorz[scoredCones];
                 robot.setHorz(horzTarget);
-                if (robot.lHorz.getCurrentPosition() > horzTarget-200) {
+                if (robot.lHorz.getCurrentPosition() > horzTarget-100) {
                     drivetrain.remote(0, 0, 0, 0);
                     robot.clawClose();
-                    sleep(600);
+                    sleep(500);
                     robot.setArm(0.7);
                     sleep(300);//half lifted
                     robot.setHorz(0);
@@ -254,7 +256,7 @@ public class Auton2 extends LinearOpMode {
             if (stage == 2) {
 
                 //if (toggleTimer > 20){
-                robot.clawAngle.setPosition(0.88);
+                    robot.clawAngle.setPosition(0.88);
                 //}
 
                 if (toggleTimer > 3){
@@ -263,56 +265,56 @@ public class Auton2 extends LinearOpMode {
                     toggleTimer = 0;
                 }
             }
-
+            
             if (stage == 3) {
-
-
-                if (toggleTimer > 20) {
+                
+                
+                if (toggleTimer > 5) {
                     robot.clawAngle.setPosition(0.3);
                     robot.setHorz(1300);
                     robot.setArm(intakeArm[scoredCones]);
 
-                    if (bucketcheck){
+                    //if (bucketcheck){
                         toggleTimer=0;
                         loaded  = true;
-
-                    }else{
-                        stage = 0;
-                        loaded = false;
-                    }
+                        
+                    //}else{
+                       // stage = 0;
+                        //loaded = false;
+                    //}
 
                 }
             }
             if (loaded){
                 robot.setVert(vertTarget);
                 //robot.yGuide.setPosition(0.35);
-
-
-
-
-
-                if (robot.lVert.getCurrentPosition()>(vertTarget-200)){
-                    robot.yGuide.setPosition(0.35);
-
-
-                    robot.bucketAngle.setPosition(0);
-
-                    sleep(500);
-                    robot.bucketAngle.setPosition(0.7);
-                    sleep(300);
-                    robot.setVert(0);
-                    robot.yGuide.setPosition(0.2);
-                    loaded=false;
-                    stage = 0;
-
-
-                    //farmingReady = true;
-
-
-
-                }
-
-
+                        
+                        
+                    
+                
+                    
+                    if (robot.lVert.getCurrentPosition()>(vertTarget-200)){
+                        robot.yGuide.setPosition(0.35);
+                        
+                        
+                        robot.bucketAngle.setPosition(0);
+                            
+                        sleep(500);
+                        robot.bucketAngle.setPosition(0.7);
+                        sleep(300);
+                        robot.setVert(0);
+                        robot.yGuide.setPosition(0.2);
+                        loaded=false;
+                        stage = 0;
+                        
+                            
+                            //farmingReady = true;
+                           
+                        
+                        
+                        }
+                    
+                
             }
             //End of transfer
             //*************************************************************************************************************
