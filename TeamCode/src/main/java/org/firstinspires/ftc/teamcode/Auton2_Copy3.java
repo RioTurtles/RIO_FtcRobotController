@@ -37,6 +37,7 @@ public class Auton2_Copy3 extends LinearOpMode {
 
         robot.imu1.resetYaw();
 
+        //aoisdhiasdhisad
         //variables
         double direction_y=0, direction_x=0, pivot=0, heading = 0;
         boolean clawOpen = true;
