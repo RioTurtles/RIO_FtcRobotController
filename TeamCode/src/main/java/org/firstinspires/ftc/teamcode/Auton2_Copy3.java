@@ -36,7 +36,7 @@ public class Auton2_Copy3 extends LinearOpMode {
         telemetry.update();
 
         robot.imu1.resetYaw();
-
+//hello
         //aoisdhiasdhisad
         //variables
         double direction_y=0, direction_x=0, pivot=0, heading = 0;
