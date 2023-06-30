@@ -1,8 +1,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -29,16 +27,12 @@ public class Project2 extends LinearOpMode
     int stage = 0;
     int vertTarget = 0;
 
-    FtcDashboard dashboard;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
         Project1Hardware robot = new Project1Hardware();
         MecanumDrive drivetrain = new MecanumDrive(robot);
-
-        dashboard = FtcDashboard.getInstance();
-        telemetry = new MultipleTelemetry(telemetry,dashboard.getTelemetry());
 
         robot.init(hardwareMap);
         telemetry.addData("Status", "Initialized");
@@ -54,24 +48,26 @@ public class Project2 extends LinearOpMode
         double toggleTimer3 =0;
         double xPos = -robot.frontRight.getCurrentPosition();
         double yPos = -robot.frontLeft.getCurrentPosition();
-
-
+        
+       
         int vertPos;
         int vertTarget =0 ;
-
+        
         int horzTarget =0;
         int farmingHorz = 1300;
-
-
+        
+        int loops = 0;
+        
+    
         String mode = "OFF";
         robot.setArm(0.9);
         robot.clawAngle.setPosition(0.28);
         robot.yGuide.setPosition(0.2);
         waitForStart();
         drivetrain.remote(0,0,0,0);
-
-
-
+  
+        
+       
         ElapsedTime timer = new ElapsedTime();
         //timer.reset();
 
@@ -84,12 +80,14 @@ public class Project2 extends LinearOpMode
         boolean lowcontrol = false;
         boolean farming =false;
         boolean farmingReady =true;
-
-
-
-        boolean bucketcheck = ((robot.bucketColor.getNormalizedColors().red> 0.009) || (robot.bucketColor.getNormalizedColors().blue>0.009));
+        boolean clawDown =true;
+        boolean groundScoring =false;
+        
+        
+        
+        boolean bucketcheck = ((robot.bucketColor.red()> 70) || (robot.bucketColor.blue()>70));
         boolean clawcheck = ((robot.clawColor.red()> 100) || (robot.clawColor.blue()>100));
-
+        
         robot.lHorz.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rHorz.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.lVert.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -100,24 +98,28 @@ public class Project2 extends LinearOpMode
         robot.frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        timer.reset();
 
 
-
-
+        
+    
         while (opModeIsActive()) {
-            direction_y   = gamepad1.left_stick_y;
+           direction_y   = gamepad1.left_stick_y;
             direction_x = -gamepad1.left_stick_x;
-            pivot    =  gamepad1.right_stick_x;
+            pivot    =  gamepad1.right_stick_x * 0.8;
             heading = robot.imu1.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-            bucketcheck = ((robot.bucketColor.getNormalizedColors().red> 0.01) || (robot.bucketColor.getNormalizedColors().blue>0.01));
-            clawcheck = (((robot.clawColor.red()> 100) || (robot.clawColor.blue()>100))&&((robot.clawColor.green()<robot.clawColor.blue())||(robot.clawColor.green()<robot.clawColor.red())));
+            bucketcheck = (((robot.bucketColor.red()> 90) || (robot.bucketColor.blue()>90))&&((robot.bucketColor.green()<robot.bucketColor.blue())||(robot.bucketColor.green()<robot.bucketColor.red())));
+            //clawcheck = (((robot.clawColor.red()> 100) || (robot.clawColor.blue()>100))&&((robot.clawColor.green()<robot.clawColor.blue())||(robot.clawColor.green()<robot.clawColor.red())));
+            clawcheck = false;
             xPos = -robot.frontRight.getCurrentPosition();
             yPos = -robot.frontLeft.getCurrentPosition();
+            cur = timer.milliseconds();
+            loops+=1;
+            
 
-
-            toggleTimer +=1 ; //intake timer
+            toggleTimer +=1 ;
             toggleTimer2 +=1 ;
-            toggleTimer3 +=1; //farming timer
+            toggleTimer3 +=1;
             //vertPos = robot.vert.getCurrentPosition();
             /*
             //if (gamepad1.square){
@@ -152,7 +154,7 @@ public class Project2 extends LinearOpMode
 
             // INTAKE
 
-
+           
             /*else if (gamepad1.dpad_up){
                 robot.vert.setTargetPosition(vertPos+20);
             }
@@ -160,8 +162,8 @@ public class Project2 extends LinearOpMode
                 robot.vert.setTargetPosition(vertPos-20);
             }
 
-
-
+           
+            
             else if (gamepad1.left_stick_button){
                 robot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 robot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -181,7 +183,7 @@ public class Project2 extends LinearOpMode
                 }
 
             }*/
-
+            
 
 
             //DRIVETRAIN
@@ -194,11 +196,11 @@ public class Project2 extends LinearOpMode
                 drivetrain.remote(-direction_y, -direction_x, -pivot, heading);
             } // normal drive
             //else {
-            //drivetrain.remote(0, ((-gamepad1.right_trigger+ gamepad1.left_trigger)*0.3), pivot, 0);
+                //drivetrain.remote(0, ((-gamepad1.right_trigger+ gamepad1.left_trigger)*0.3), pivot, 0);
             //} // horizontal strafe
 
             //if (gamepad1.touchpad) {
-            //robot.imu1.resetYaw();
+                //robot.imu1.resetYaw();
             //}
 
             //if (gamepad1.square || gamepad1.circle || gamepad1.triangle || gamepad1.cross){
@@ -223,31 +225,33 @@ public class Project2 extends LinearOpMode
                 ground=false;
             }
             else if (gamepad1.circle){
-                vertTarget = 1100;
+                vertTarget = 730;
                 ground=false;
             }
             else if (gamepad1.triangle){
-                vertTarget = 2300;
+                vertTarget = 1500;
                 ground=false;
             }
 
 
             if (stage == 0){
                 robot.bucketAngle.setPosition(0.65);
-                robot.clawAngle.setPosition(0.28);
-                //robot.setArm(0.05);
+                //robot.clawAngle.setPosition(0.28);
+                
                 robot.yGuide.setPosition(0.2);
-
-
+                
+                
                 if(!farming){
-                    if (gamepad1.right_bumper||clawcheck){
-
-
+                    if ((gamepad1.right_bumper||clawcheck)&&clawDown){
+                            
+                    
                         drivetrain.remote(0,0,0,0);
                         robot.clawClose();
                         robot.lHorz.setPower(0);
                         robot.rHorz.setPower(0);
                         sleep(200);
+                        horzTarget=0;
+                        robot.setHorz(horzTarget);
                         toggleTimer=0;
                         stage += 1;
 
@@ -256,8 +260,9 @@ public class Project2 extends LinearOpMode
                     }
                 }else{
                     robot.setArm(0.05);
+                    robot.clawAngle.setPosition(0.28);
                     robot.setHorz(farmingHorz);
-
+                    
                     if (robot.lHorz.getCurrentPosition()>farmingHorz-200||clawcheck){
                         drivetrain.remote(0, 0, pivot, 0);
                         robot.clawClose();
@@ -271,42 +276,49 @@ public class Project2 extends LinearOpMode
             }
             if (stage==1){
                 if(!ground){
-                    if (robot.lHorz.getCurrentPosition()<20){
-                        robot.setArm(0.83);
-
+                    clawDown=false;
+                   if (((robot.lHorz.getCurrentPosition()<500)||(robot.lHorz.getCurrentPosition()<1800&&robot.lHorz.getCurrentPosition()>1000))&&(toggleTimer>5)){
+                        robot.setArm(0.85);
+                        robot.clawAngle.setPosition(0.65);
+                        
                         toggleTimer=0;
                         stage += 1;
-
-                    }else{
-                        robot.setArm(0.7);
-                    }
-
+                    
+                        }else{
+                            robot.setArm(0.7);
+                        }   
+                    
                 }else {
-                    robot.setArm(0.8);
-
+                    robot.setArm(0.85);
+                
                     if(gamepad1.right_bumper){
                         robot.clawAngle.setPosition(0.28);//horizontal
-                        robot.setArm(0.05);//ground level
-                        drivetrain.remote(0,0,0,0);
-                        sleep(500);
-                        robot.clawOpen();
-                        stage=0;
-
+                        robot.setArm(0.2);//ground level
+                        groundScoring = true;
+                    
                     }
-
+                    if(groundScoring&&!gamepad1.right_bumper&&toggleTimer>5){
+                        drivetrain.remote(0,0,0,0);
+                        robot.clawOpen();
+                        sleep(500);
+                        groundScoring=false;
+                        stage=0;
+                        
+                    }
                 }
 
             }
 
-
+            
             if (stage ==2){
-
-                if (toggleTimer > 6){
-                    robot.clawAngle.setPosition(0.85);
+                
+                if (toggleTimer > 3){
+                    robot.clawAngle.setPosition(0.8);
+                    
                 }
-                bucketcheck = ((robot.bucketColor.getNormalizedColors().red> 0.009) || (robot.bucketColor.getNormalizedColors().blue>0.009));
+                bucketcheck = (((robot.bucketColor.red()> 80) || (robot.bucketColor.blue()>80))&&((robot.bucketColor.green()<robot.clawColor.blue())||(robot.bucketColor.green()<robot.bucketColor.red())));
 
-                if (toggleTimer > 15||bucketcheck){
+                if (toggleTimer > 15){
                     robot.clawOpen();
                     stage +=1 ;
                     toggleTimer = 0;
@@ -315,83 +327,88 @@ public class Project2 extends LinearOpMode
 
             if (stage ==3){
 
+                
+                if (toggleTimer > 3) {
+                    robot.clawAngle.setPosition(0.6);
+                    robot.setArm(0.05);
+                    
 
-                if (toggleTimer > 5) {
-                    robot.clawAngle.setPosition(0.28);
-                    sleep(200);
-                    if (bucketcheck){
-                        toggleTimer=0;
+                    if (bucketcheck&&toggleTimer>5){
+                       toggleTimer=0;
                         loaded  = true;
+                        
+                    }//else{
+                        //stage = 0;
+                       // loaded = false;
+                        
 
-                    }else{
-                        stage = 0;
-                        loaded = false;
 
-
-
-                    }
+                    //}
                 }
+            }
 
-                if (loaded){
-                    //telemetry.addLine("loaded");
+            if (loaded){
+                //telemetry.addLine("loaded");
+                if (gamepad1.right_bumper){
+                    robot.setVert(vertTarget);
+                    
+                }
+                if (farming){
+                    robot.setVert(vertTarget);
+                    robot.setArm(0.05);
+                    robot.clawAngle.setPosition(0.28);
+                    robot.setHorz(farmingHorz-800);
+                    lowcontrol=false;
+                    
+                }
+                
+                if(vertTarget ==0){
                     if (gamepad1.right_bumper){
-                        robot.setVert(vertTarget);
-
+                        robot.yGuide.setPosition(0.4);
+                        lowcontrol = true;
+                        
                     }
-                    if (farming){
-                        robot.setVert(vertTarget);
-                        robot.setArm(0.05);
-                        robot.setHorz(farmingHorz-800);
-                        lowcontrol=false;
-
-                    }
-
-                    if(vertTarget ==0){
-                        if (gamepad1.right_bumper){
-                            robot.yGuide.setPosition(0.35);
-                            lowcontrol = true;
-
+                }else{
+                    lowcontrol =false;
+                    if (robot.lVert.getCurrentPosition()>(vertTarget-200)){
+                        robot.yGuide.setPosition(0.35);
+                        
+                        if (!gamepad1.right_bumper||farming){ drivetrain.remote(0,0,0,0);
+                            robot.bucketAngle.setPosition(0);
+                            
+                            sleep(600);
+                            robot.bucketAngle.setPosition(0.65);
+                            sleep(300);
+                            robot.setVert(0);
+                            stage = 0;
+                            loaded=false;
+                            
+                            //farmingReady = true;
+                           
                         }
-                    }else{
-                        lowcontrol =false;
-                        if (robot.lVert.getCurrentPosition()>(vertTarget-200)){
-                            robot.yGuide.setPosition(0.35);
-
-                            if (!gamepad1.right_bumper||farming){ drivetrain.remote(0,0,0,0);
-                                robot.bucketAngle.setPosition(0);
-
-                                sleep(600);
-                                robot.bucketAngle.setPosition(0.65);
-                                sleep(300);
-                                robot.setVert(0);
-                                stage = 0;
-                                loaded=false;
-
-                                //farmingReady = true;
-
-                            }
-
+                        
                         }
                     }
-
-                }
+                
+                
             }
             if(!gamepad1.right_bumper&& lowcontrol){
-                drivetrain.remote(0,0,0,0);
-                robot.bucketAngle.setPosition(0);
-                sleep(600);
-                robot.bucketAngle.setPosition(0.65);
-                sleep(200);
-                robot.setVert(0);
-                lowcontrol = false;
-                loaded=false;
-                stage = 0;
-            }
+                            drivetrain.remote(0,0,0,0);
+                            robot.bucketAngle.setPosition(0);
+                            sleep(600);
+                            robot.bucketAngle.setPosition(0.65);
+                            sleep(200);
+                            robot.setVert(0);
+                            robot.yGuide.setPosition(0.2);
+                            lowcontrol = false;
+                            loaded=false;
+                            stage = 0;
+                        }
 
             //Farming
             if (gamepad1.dpad_up && toggleTimer3 >20){
                 farming = !farming;
-                vertTarget = 2300;
+                vertTarget = 1500;
                 toggleTimer3 =0;
             }
             if(gamepad1.dpad_down){
@@ -399,82 +416,75 @@ public class Project2 extends LinearOpMode
             }
 
 
-
-
+            
+        
             /*Horizontal*/
             if(!farming){
                 if (gamepad1.left_bumper){
                     if(ground&&loaded) {
                         robot.setArm(0.3);//lifting position
+                        robot.clawAngle.setPosition(0.28);
 
                     } else{
-                        robot.setArm(0.05);//intake position
+                    robot.setArm(0.05);//intake position
                     }
                     robot.clawAngle.setPosition(0.28);//horizontal position
-                    if((toggleTimer2>10)&&(robot.lHorz.getCurrentPosition()<2000)){
+                    clawDown = true;
+                    if((toggleTimer2>5)&&(robot.lHorz.getCurrentPosition()<2000)){
                         horzTarget =robot.lHorz.getCurrentPosition()+400;//speed of horizontal
                         robot.setHorz(horzTarget);
                     }
                     telemetry.addLine("extend");
 
                 }else{
-                    horzTarget=0;
-                    robot.setHorz(horzTarget);
+                    //horzTarget=0;
+                    //robot.setHorz(horzTarget);
                     telemetry.addLine("retract");
                     if(robot.lHorz.getCurrentPosition() <50){
                         toggleTimer2 = 0;
-
+                   
                     }
                 }
             }
             if(gamepad1.right_trigger>0.2){
                 robot.setArm(0.15);
+                
             }
             if(gamepad1.left_trigger>0.2){//hardRest
                 stage =0;
                 loaded=false;
-
-
+                robot.setHorz(0);
+                
+                
             }
 
 
+            
+
+        
+            
 
 
-
-
-
-
-            //TELEMETRY
+             //TELEMETRY
 
             //telemetry.addData("servopos1", servopos);
             //telemetry.addData("servopos2", servopos2);
             //telemetry.addData("servopos3", servopos3);
             // telemetry.addData("vert height", robot.lVert.getCurrentPosition());
-            telemetry.addData("time", toggleTimer);
+            telemetry.addData("time", toggleTimer3);
             telemetry.addData("stage",stage);
             telemetry.addData("Horz",robot.lHorz.getCurrentPosition());
             telemetry.addData("Horz Target",horzTarget);
-            telemetry.addData("Horz",robot.lVert.getCurrentPosition());
+            telemetry.addData("Vert",robot.lVert.getCurrentPosition());
 
-            telemetry.addData("bucket red",robot.bucketColor.getNormalizedColors().red );
-            telemetry.addData("bucket blue",robot.bucketColor.getNormalizedColors().blue );
-            telemetry.addData("claw red",robot.clawColor.red());
-            telemetry.addData("claw blue",robot.clawColor.blue());
-            telemetry.addData("claw green",robot.clawColor.green());
-            telemetry.addData("claw check",clawcheck);
-
-
+            telemetry.addData("red",robot.bucketColor.red() );
+            telemetry.addData("blue",robot.bucketColor.blue() );
             telemetry.addData("farming",farming);
-
-
             //telemetry.addData("yaw1", robot.yaw1.getPosition());
             //telemetry.addData("yaw2", robot.yaw2.getPosition());*/
             telemetry.addData("heading",heading);
-            telemetry.addData("xPos",xPos);
-            telemetry.addData("yPos",yPos);
+            telemetry.addData("Hz",loops/cur*1000);
 
-
-            //dashboard.startCameraStream(webcam1, 100);
 
             telemetry.update();
 

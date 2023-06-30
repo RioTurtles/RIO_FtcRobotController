@@ -24,9 +24,13 @@ import javax.xml.datatype.DatatypeConfigurationException;
 
 public class Project1Hardware {
     DcMotor frontLeft = null, frontRight = null, backLeft = null, backRight = null;
-    DcMotor rVert, lVert;
+    DcMotorEx arm = null;
+    DcMotor horz = null, vert = null;
+    DcMotor flip1, flip2;
+    DcMotor rVert,lVert;
     DcMotor rHorz, lHorz;
-
+    
+    Servo claw1, claw2, yaw1, yaw2;
     Servo bucketAngle = null;
     Servo claw = null, clawAngle = null;
     Servo armLeft = null, armRight =null;
@@ -36,13 +40,13 @@ public class Project1Hardware {
     IMU imu1;
     DcMotor encoder;
     DistanceSensor leftDis,rightDis,backDis,fRightDis;
-
-
-    NormalizedColorSensor bucketColor = null;
+    
+    
+    ColorSensor bucketColor = null;
     ColorSensor clawColor = null;
-
-
-
+       
+        
+    
 
     public void init(HardwareMap hardwareMap){
         hwmap = hardwareMap;
@@ -50,33 +54,45 @@ public class Project1Hardware {
         frontRight = hardwareMap.get(DcMotor.class,"FRight");
         backLeft = hardwareMap.get(DcMotor.class,"BLeft");
         backRight = hardwareMap.get(DcMotor.class,"BRight");
-
-
+        
+        
         rVert = hardwareMap.get(DcMotor.class,"rightVert");
         lVert = hardwareMap.get(DcMotor.class,"leftVert");
-
+        
         rHorz = hardwareMap.get(DcMotor.class,"rightHorz");
         lHorz = hardwareMap.get(DcMotor.class,"leftHorz");
-
+        
+        //arm = hardwareMap.get(DcMotorEx.class,"ARM");
+        //bucket = hardwareMap.get(Servo.class, "BUCKET");            // bucket open/close
         bucketAngle = hardwareMap.get(Servo.class, "bucketAngle"); // whole bucket
         claw = hardwareMap.get(Servo.class, "claw");                // intake open/close
         clawAngle = hardwareMap.get(Servo.class, "clawAngle");     // whole intake
+        //colorSensor = hardwareMap.get(NormalizedColorSensor.class, "BUCKET COLOR");
+        //horz = hardwareMap.get(DcMotor.class, "HORZ SLIDE");
+        //vert = hardwareMap.get(DcMotor.class, "VERT SLIDE");
         imu1 = hardwareMap.get(IMU.class, "imu");
 
+
+        //flip1 = hardwareMap.get(DcMotor.class, "FLIP1");
+        //flip2 = hardwareMap.get(DcMotor.class, "FLIP2");
+        //claw1 = hardwareMap.get(Servo.class, "CLAW1");
+        //claw2 = hardwareMap.get(Servo.class, "CLAW2");
+        //yaw1 = hardwareMap.get(Servo.class, "YAW1");
+        //yaw2 = hardwareMap.get(Servo.class, "YAW2");
         armLeft = hardwareMap.get(Servo.class, "armLeft");
         armRight = hardwareMap.get(Servo.class, "armRight");
 
         yGuide = hardwareMap.get(Servo.class, "yGuide");
-
-
+        
+        
         leftDis= hardwareMap.get(DistanceSensor.class, "leftDistance");
         rightDis= hardwareMap.get(DistanceSensor.class, "rightDistance");
-        backDis= hardwareMap.get(DistanceSensor.class, "backDistance");
+        backDis= hardwareMap.get(DistanceSensor.class, "backDistance"); 
         fRightDis= hardwareMap.get(DistanceSensor.class, "frontRightDistance");
-
-
+        
+        
         //encoder = hardwareMap.get(DcMotor.class, "encoder");
-        bucketColor = hardwareMap.get(NormalizedColorSensor.class, "bucketColor");
+        bucketColor = hardwareMap.get(ColorSensor.class, "bucketColor");
         clawColor = hardwareMap.get(ColorSensor.class, "clawColor");
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -104,7 +120,9 @@ public class Project1Hardware {
         lHorz.setDirection(DcMotor.Direction.REVERSE);
         rHorz.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lHorz.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        
+        
+        
         //vert.setDirection(DcMotor.Direction.REVERSE);
         armLeft.setDirection(Servo.Direction.REVERSE);
         armRight.setDirection(Servo.Direction.FORWARD);
@@ -225,7 +243,7 @@ public class Project1Hardware {
         setMotorPositions(FLpos, FRpos, BLpos, BRpos);
         setMode(2);
     }
-
+    
     public void setVert(int height){
         lVert.setTargetPosition(height);
         rVert.setTargetPosition(height);
@@ -233,8 +251,8 @@ public class Project1Hardware {
         rVert.setPower(1);
         lVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rVert.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
+        
+        
     }
     public void clawClose(){
         claw.setPosition(0.3);
@@ -250,10 +268,10 @@ public class Project1Hardware {
         armRight.setPosition(armAngle);
 
     }
+    
 
-
-
-
+  
+    
     public void setHorz(int horzTarget){
         lHorz.setTargetPosition(horzTarget);
         rHorz.setTargetPosition(horzTarget);
@@ -263,8 +281,10 @@ public class Project1Hardware {
         rHorz.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
     }
-
-
+    
+   
+    
+   
 
 
     /*public static double[] servoPos ={0,0,0,0,0,0,0,0};
@@ -291,8 +311,8 @@ public class Project1Hardware {
 
 
 
-
-
+    
+    
 
 
 
