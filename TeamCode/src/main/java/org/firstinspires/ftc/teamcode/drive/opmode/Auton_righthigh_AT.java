@@ -40,7 +40,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous(name="jerry_right")
-public class AutonFinal extends LinearOpMode
+public class Auton_righthigh_AT extends LinearOpMode
 {
 
 
@@ -95,7 +95,7 @@ public class AutonFinal extends LinearOpMode
             }
         });
 
-        telemetry.setMsTransmissionInterval(1/00);
+        telemetry.setMsTransmissionInterval(100);
 
         Project1Hardware robot = new Project1Hardware(hardwareMap);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
