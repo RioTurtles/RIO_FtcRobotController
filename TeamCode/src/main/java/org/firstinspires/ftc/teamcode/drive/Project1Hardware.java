@@ -23,7 +23,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import javax.xml.datatype.DatatypeConfigurationException;
 
 public class Project1Hardware {
-    DcMotor frontLeft = null, frontRight = null, backLeft = null, backRight = null;
+    public DcMotor frontLeft = null;
+    public DcMotor frontRight = null;
+    public DcMotor backLeft = null;
+    public DcMotor backRight = null;
     DcMotorEx arm = null;
     DcMotor horz = null, vert = null;
     DcMotor flip1, flip2;
@@ -39,7 +42,7 @@ public class Project1Hardware {
     public Servo yGuide = null;
     NormalizedColorSensor colorSensor = null;
     HardwareMap hwmap = null;
-    IMU imu1;
+    public IMU imu1;
     DcMotor encoder;
     DistanceSensor leftDis,rightDis,backDis,fRightDis;
 

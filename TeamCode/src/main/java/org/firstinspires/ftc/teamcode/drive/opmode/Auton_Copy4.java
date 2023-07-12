@@ -55,16 +55,20 @@ public class Auton_Copy4 extends LinearOpMode {
         int loops = 0;
         double toggleTimer = 0, toggleOrig1 = 0, toggleInterval = 50;
         double toggleTimer2 = 0;
-        double intakeArm[] = {0.38, 0.32, 0.26, 0.18, 0.05, 0.7};
+        double intakeArm[] = {0.24, 0.22, 0.18, 0.16, 0.12, 0.10};
         timer.reset();
         timer2.reset();
         //boolean bucketcheck = ((robot.bucketColor.getNormalizedColors().red> 0.05) || (robot.bucketColor.getNormalizedColors().blue>0.05));
         boolean clawcheck = ((robot.clawColor.red() > 200) || (robot.clawColor.blue() > 200));
         TrajectorySequence untitled0 = drive.trajectorySequenceBuilder(new Pose2d(-32.00, 62.63, Math.toRadians(270.00)))
                 .lineTo(new Vector2d(-36.00, 18.00))
-                .splineToSplineHeading(new Pose2d(-34, 5.00, Math.toRadians(345)), Math.toRadians(310.00))
+                .splineToSplineHeading(new Pose2d(-34, 3.00, Math.toRadians(345)), Math.toRadians(310.00))
+                .addTemporalMarker(1,() -> {
+            robot.setVert(vertTarget);
+        })
                 .build();
         drive.setPoseEstimate(untitled0.start());
+
         Trajectory forward = drive.trajectoryBuilder(new Pose2d(-33.00, 62.63, Math.toRadians(270.00)))
                 .forward(10)
                 .build();
@@ -89,7 +93,7 @@ public class Auton_Copy4 extends LinearOpMode {
             Pose2d myPose = drive.getPoseEstimate();
             drive.update();
             Trajectory stay = drive.trajectoryBuilder(myPose)
-                    .lineToLinearHeading(new Pose2d(-33, 5, Math.toRadians(345)))
+                    .lineToLinearHeading(new Pose2d(-35, 3, Math.toRadians(340)))
                     .build();
 
             if (autonStage ==-1){ //moving right
@@ -124,10 +128,11 @@ public class Auton_Copy4 extends LinearOpMode {
                 }
             }
             if (autonStage == 2){
-                if (stage==0){
-                    autonStage+=1;
+                if (stage==0) {
+                    autonStage += 1;
                 }
-                robot.setHorz(1200);
+                robot.clawAngle.setPosition(0.3);
+                robot.setHorz(1100);
                 robot.setArm(intakeArm[1]);
                 scoring = true;
             }
@@ -157,11 +162,12 @@ public class Auton_Copy4 extends LinearOpMode {
             //***************************************************************
             //TRANSFER
 
-            if (stage == 0 && scoring) {
+            if (stage == 0 && scoring) { //grab
                 robot.setArm(intakeArm[scoredCones]);
 
 
                 //robot.clawOpen();
+                sleep(1000);
                 horzTarget=intakeHorz[scoredCones]-100;
                 robot.setHorz(horzTarget);
                 if ((robot.lHorz.getCurrentPosition() > horzTarget-300)||clawcheck) {
@@ -179,9 +185,9 @@ public class Auton_Copy4 extends LinearOpMode {
 
 
             }
-            if (stage==1) {
+            if (stage==1) { //retract
                 if (robot.lHorz.getCurrentPosition()<150) {
-                    robot.setArm(0.82);
+                    robot.setArm(0.85);
                     robot.clawAngle.setPosition(0.65);
 
                     scoredCones+=1;
@@ -191,7 +197,7 @@ public class Auton_Copy4 extends LinearOpMode {
 
                 }
             }
-            if (stage == 2) {
+            if (stage == 2) { //open claw
 
                 //if (toggleTimer > 3){
                 robot.clawAngle.setPosition(0.85);
@@ -205,7 +211,7 @@ public class Auton_Copy4 extends LinearOpMode {
                 }
             }
 
-            if (stage == 3) {
+            if (stage == 3) { //release claw
 
 
                 if (timer2.milliseconds()>300) {
@@ -227,7 +233,7 @@ public class Auton_Copy4 extends LinearOpMode {
 
                 }
             }
-            if (loaded){
+            if (loaded){ //score and extend
                 robot.setVert(vertTarget);
                 //robot.yGuide.setPosition(0.35);
 
